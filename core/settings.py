@@ -17,10 +17,10 @@ import sys
 
 # base_dir config
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-TEMPLATE_DIR = os.path.join(BASE_DIR,'templates')
+TEMPLATE_DIR = os.path.join(BASE_DIR,'templates') #! Verificar o caminho
 STATIC_DIR=os.path.join(BASE_DIR,'static')
 
-# Adicionar essa tag para que nosso projeto encontre o .env
+# Adicionar essa tag para que o projeto encontre o .env
 load_dotenv(os.path.join(BASE_DIR, ".env"))
 
 # Local onde estão os apps
@@ -94,7 +94,7 @@ ROOT_URLCONF = 'core.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'apps/base/templates')], #! Verificar o caminho
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -115,14 +115,14 @@ WSGI_APPLICATION = 'core.wsgi.application'
 
 # Database
 DATABASES = {
-'default': {
-'ENGINE': 'django.db.backends.sqlite3',
-'NAME': os.path.join(BASE_DIR, os.getenv('NAME_DB')),
-#'USER':os.getenv('USER_DB')
-#'PASSWORD': os.getenv('PASSWORD_DB')
-#'HOST':os.getenv('HOST_DB')
-#'PORT':os.getenv('PORT_DB')
-}
+    'default': {
+    'ENGINE': 'django.db.backends.sqlite3',
+    'NAME': os.path.join(BASE_DIR, os.getenv('NAME_DB')),
+    #'USER':os.getenv('USER_DB')
+    #'PASSWORD': os.getenv('PASSWORD_DB')
+    #'HOST':os.getenv('HOST_DB')
+    #'PORT':os.getenv('PORT_DB')
+    }
 }
 
 
