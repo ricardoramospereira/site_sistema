@@ -68,19 +68,27 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    # Third_apps
+    "corsheaders",
+
+    # My app
+    'accounts',
+    'apps.pages',
 ]
 
 # Apps de terceiro
-THIRD_APPS = [
+'''THIRD_APPS = [
     "corsheaders",
-]
+]'''
 
 # Meu app
-PROJECT_APPS = [
- #  'apps.base',
+'''PROJECT_APPS = [
+    
     'apps.pages',
+    'apps.accounts',
 
-]
+]'''
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -115,6 +123,9 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'core.wsgi.application'
+
+AUTH_USER_MODEL = 'accounts.MyUser'
+
 
 
 # Database
