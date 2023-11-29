@@ -9,23 +9,27 @@ https://docs.djangoproject.com/en/4.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
-
+from pathlib import Path
 from dotenv import load_dotenv
 from corsheaders.defaults import default_headers
+from django.contrib.messages import constants
 import os
 import sys
 
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+
 # base_dir config
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-TEMPLATE_DIR = os.path.join(BASE_DIR,'templates') #! Verificar o caminho
-STATIC_DIR=os.path.join(BASE_DIR,'static')
+PROJECT_ROOT = os.path.dirname(__file__)
+
+sys.path.insert(0, os.path.join(PROJECT_ROOT, '../apps')) 
 
 # Adicionar essa tag para que o projeto encontre o .env
 load_dotenv(os.path.join(BASE_DIR, ".env"))
 
 # Local onde estão os apps
-APPS_DIR = str(os.path.join(BASE_DIR, 'apps'))
-sys.path.insert(0, APPS_DIR)
+'''APPS_DIR = str(os.path.join(BASE_DIR, 'apps'))
+sys.path.insert(0, APPS_DIR)'''
 
 
 # SECURITY WARNING: keep the secret key used in production secret!
@@ -73,8 +77,9 @@ THIRD_APPS = [
 
 # Meu app
 PROJECT_APPS = [
-    'apps.base',
-    #'apps.myapp',
+ #  'apps.base',
+    'apps.pages',
+
 ]
 
 MIDDLEWARE = [
@@ -94,7 +99,7 @@ ROOT_URLCONF = 'core.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'apps/base/templates')], #! Verificar o caminho
+        'DIRS': [os.path.join(BASE_DIR, 'templates')], #! Verificar o caminho
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -102,6 +107,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                # Apps
+                'core.context_processors.context_social',
             ],
         },
     },
@@ -194,12 +201,12 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_ROOT = os.path.join(BASE_DIR,'static')
-STATIC_URL = '/static/'
-# STATICFILES_DIRS = [ # talvez em Produção podesse usar assim.
-# BASE_DIR / 'static',
-# ]
-MEDIA_ROOT=os.path.join(BASE_DIR,'media')
+STATIC_URL = 'static/'
+STATICFILES_DIRS = (os.path.join(BASE_DIR, 'templates/static'),)
+
+#STATIC_ROOT = os.path.join('staticfiles')
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
 # Default primary key field type
@@ -215,3 +222,12 @@ EMAIL_PORT = os.getenv('EMAIL_PORT')
 EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS')
 DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL')
 SERVER_EMAIL = DEFAULT_FROM_EMAIL
+
+
+MESSAGE_TAGS = {
+    constants.ERROR: 'alert-danger',
+    constants.WARNING: 'alert-warning',
+    constants.DEBUG: 'alert-danger',
+    constants.SUCCESS: 'alert-success',
+    constants.INFO: 'alert-info',
+}
