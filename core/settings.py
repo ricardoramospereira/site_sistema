@@ -93,7 +93,8 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    "corsheaders.middleware.CorsMiddleware", # Cors
+    'django_session_timeout.middleware.SessionTimeoutMiddleware', # Timeout
+    'corsheaders.middleware.CorsMiddleware', # Cors
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -192,6 +193,16 @@ REQUESTLOGS = {
     'SECRETS': ['password', 'token'],
     'METHODS': ('PUT', 'PATCH', 'POST', 'DELETE'),
 }
+
+# Timeout
+SESSION_EXPIRE_SECONDS = 1800  # 30 minutos
+SESSION_EXPIRE_AFTER_LAST_ACTIVITY = True
+# SESSION_EXPIRE_AFTER_LAST_ACTIVITY_GRACE_PERIOD = 60 # group by minute
+SESSION_TIMEOUT_REDIRECT = 'http://localhost:8000/account/timeout'
+
+LOGIN_URL = 'login' # Rota login
+LOGIN_REDIRECT_URL = '/' # Caminho login
+LOGOUT_REDIRECT_URL = '/' # Caminho logout
 
 
 # Internationalization
