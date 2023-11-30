@@ -62,6 +62,7 @@ if not DEBUG:
 
 # Apps do django
 INSTALLED_APPS = [
+    'apps.accounts',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -73,7 +74,6 @@ INSTALLED_APPS = [
     "corsheaders",
 
     # My app
-    'accounts',
     'apps.pages',
 ]
 
@@ -203,6 +203,8 @@ SESSION_TIMEOUT_REDIRECT = 'http://localhost:8000/account/timeout'
 LOGIN_URL = 'login' # Rota login
 LOGIN_REDIRECT_URL = '/' # Caminho login
 LOGOUT_REDIRECT_URL = '/' # Caminho logout
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend' # Modo debug
 
 
 # Internationalization
