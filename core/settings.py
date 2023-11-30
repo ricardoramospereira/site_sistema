@@ -75,6 +75,7 @@ INSTALLED_APPS = [
 
     # My app
     'apps.pages',
+    'apps.user_profile',
 ]
 
 # Apps de terceiro
