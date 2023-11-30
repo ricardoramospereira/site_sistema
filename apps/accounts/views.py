@@ -1,9 +1,12 @@
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
-from django.shortcuts import render, redirect
-from accounts.forms import CustomUserCreationForm
+from django.shortcuts import get_object_or_404, render, redirect
+from accounts.forms import CustomUserCreationForm, UserChangeForm
 from django.contrib.auth.models import Group, User
 from django.contrib.auth import logout
+from django.contrib.auth.decorators import login_required
+from accounts.models import MyUser
+from apps.accounts.permission import grupo_colaborador_required
 
 # Create your views here.
 def timeout_view(request):
@@ -50,3 +53,29 @@ def register_view(request):
 def logout_view(request):
     logout(request)
     return redirect('home')
+
+@login_required()
+def update_my_user(request):
+    if request.method == 'POST':
+        form = UserChangeForm(request.POST, instance=request.user, user=request.user)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Seu perfil foi atualizado com sucesso!')
+        return redirect('home')
+    else:
+        form = UserChangeForm(instance=request.user, user=request.user)
+    return render(request, 'accounts/user_update.html', {'form': form})
+
+@login_required()
+@grupo_colaborador_required(['administrador','colaborador'])
+def update_user(request, user_id):
+    user = get_object_or_404(MyUser, pk=user_id)
+    if request.method == 'POST':
+        form = UserChangeForm(request.POST, instance=user, user=request.user)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'O perfil de usuário foi atualizado com sucesso!')
+            return redirect('home')
+    else:
+        form = UserChangeForm(instance=user, user=request.user)
+    return render(request, 'accounts/user_update.html', {'form': form})
