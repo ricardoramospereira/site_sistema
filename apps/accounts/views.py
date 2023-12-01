@@ -68,8 +68,8 @@ def update_my_user(request):
 
 @login_required()
 @grupo_colaborador_required(['administrador','colaborador'])
-def update_user(request, user_id):
-    user = get_object_or_404(MyUser, pk=user_id)
+def update_user(request, username):
+    user = get_object_or_404(MyUser, username=username)
     if request.method == 'POST':
         form = UserChangeForm(request.POST, instance=user, user=request.user)
         if form.is_valid():
