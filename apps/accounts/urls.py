@@ -8,6 +8,8 @@ urlpatterns = [
     path('logout/', views.logout_view, name='logout'),
     path('update-my-user/', views.update_my_user, name='update-my-user'),
     path('update-user/<slug:username>/', views.update_user, name='update-user'),
+    path('user-list/', views.user_list, name='user_list'),
+    path('add-user/', views.add_user, name='add-user'),
     path("", include("django.contrib.auth.urls")), # Django auth
     
 ]

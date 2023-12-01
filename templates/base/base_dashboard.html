@@ -82,18 +82,21 @@
         >
           <i class="fas fa-arrow-left me-2"></i>Site
         </button>
-        <button type="button" class="btn btn-light" aria-current="true">
-          <i class="fas fa-tachometer-alt me-2"></i>Painel
-        </button>
+
+        <button type="button" class="btn btn-light" aria-current="true" onclick="location.href='{% url 'dashboard' %}'">
+        <i class="fas fa-tachometer-alt me-2"></i>Painel</button>
+
         <button type="button" class="btn btn-light">
           <i class="fas fa-file-alt me-2"></i>Relatórios
         </button>
-        <button type="button" class="btn btn-light">
-          <i class="fas fa-users me-2"></i>Usuários do Sistema
-        </button>
-        <button type="button" class="btn btn-light">
-          <i class="fas fa-cog me-2"></i>Configurações
-        </button>
+
+        {% if perms.accounts.view_myuser %}
+            <button type="button" class="btn btn-light" onclick="location.href='{% url 'user_list' %}'">
+            <i class="fas fa-users me-2"></i>Usuários do Sistema</button>
+        {% endif %}
+
+        <button type="button" class="btn btn-light" onclick="location.href='{% url 'settings' %}'">
+        <i class="fas fa-cog me-2"></i>Configurações</button>
       </div>
     </div>
     <!-- Container -->

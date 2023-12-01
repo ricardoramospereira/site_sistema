@@ -10,6 +10,7 @@ path('admin/', admin.site.urls),
 path('account/', include('accounts.urls')),
 path('', include('pages.urls')),
 path('profile_user/', include('user_profile.urls')),
+path('config/', include('config.urls')),
 
 ]
 

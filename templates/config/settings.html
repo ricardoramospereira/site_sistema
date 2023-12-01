@@ -1,0 +1,41 @@
+{% extends 'base/base_dashboard.html' %}
+
+{% block title %}Configurações{% endblock %}
+
+{% block content_dash %}
+<div class="d-flex flex-wrap gap-3">
+
+  <!-- Seção de Contas -->
+  <div class="p-5 bg-light" style="width: 430px">
+    <h4>Contas</h4>
+    <p>Configurações do aplicativo contas</p>
+    <div>
+    <ul>
+
+      <li><a href="{% url 'password_change' %}" class="btn btn-primary">Alterar minha senha</a></li>
+      
+
+    </ul>
+    </div>
+  </div>
+  
+  <!-- Seção de Sistema -->
+  <div class="p-5 bg-light" style="width: 430px">
+    <h4>Sistema</h4>
+    <p>Configurações de logo, Banner, informações da empresa.</p>
+    <div class="mb-2">
+      <a href="#" class="btn btn-secondary">Alterar Informações da Empresa</a>
+    </div>
+    <div class="mb-2">
+      <a href="#" class="btn btn-secondary">Alterar Banner Inicial</a>
+    </div>
+    <div class="mb-2">
+      <a href="#" class="btn btn-secondary">Tags/Metas/Robot</a>
+    </div>
+    <div>
+      <a href="#" class="btn btn-secondary">Alterar Logo</a>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
