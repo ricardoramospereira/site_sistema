@@ -1,13 +1,14 @@
-{% extends "base/base.html" %} 
+{% extends "base/base.html" %}
+{% load static %} 
 
 {% block content %}
 <div class="container mt-3">
   <div class="d-flex flex-wrap gap-5 justify-content-center align-items-center">
     <div class="d-flex flex-column">
       {% if obj.perfil.foto %}
-        <img src="{{obj.prefil.foto.url}}" class='img-thumbnail border rounded' width='280' alt=''> 
+        <img src="{{obj.perfil.foto.url}}" class='img-thumbnail border rounded' width='280' alt=''> 
       {% else %}  
-        <img src="{% static 'images/perfil/'%}" class='img-thumbnail border rounded' width='280' alt=''> 
+        <img src="{% static 'images/teste.png/'%}" class='img-thumbnail border rounded' width='280' alt=''> 
 
       {% endif %}  
 
@@ -29,3 +30,4 @@
     </div>
   </div>
 </div>
+{% endblock %}

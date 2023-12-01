@@ -6,7 +6,7 @@ class UserProfile(models.Model):
     foto = models.ImageField(upload_to='perfil/foto/', blank=True)
     ocupacao = models.CharField(max_length=120, blank=True)
     descricao = models.TextField(blank=True)
-    genero = models.CharField(max_length=20, blank=True)
+    genero = models.CharField(max_length=20, blank=True) #TODO
     telefone = models.CharField(max_length=20, blank=True)
     cidade = models.CharField(max_length=20, blank=True)
     estado = models.CharField(max_length=20, blank=True)
