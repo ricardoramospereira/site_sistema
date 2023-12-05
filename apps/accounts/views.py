@@ -28,8 +28,8 @@ def login_view(request):
             login(request, user)
             
             if user.is_authenticated and user.requires_password_change(): # Verifica
-                msg = 'Olá', +user.first_name+', como você pode perceber atualmente \
-                        a sua senha é 123 cadastrado. Recomendamos fortemente \
+                msg = 'Olá'+user.first_name+', como você pode perceber atualmente \
+                        a sua foi gerada automaticamente pelo sistema. Recomendamos fortemente \
                         que você altere sua senha para garantir a segurança da sua conta. \
                         É importante escolher uma senha forte e única que não seja fácil de adivinhar. \
                         Obrigado pela sua atenção!'
@@ -159,7 +159,10 @@ def add_user(request):
             # Salve o usuário
             usuario = user_form.save()
 
-            # Atualize ou crie um novo perfil para o usuário
+            group = Group.objects.get(name='usuario')
+            usuario.groups.add(group)
+
+            # Crie um novo perfil para o usuário
             perfil, created = UserProfile.objects.get_or_create(usuario=usuario)
             perfil_form = ProfileForm(request.POST, request.FILES, instance=perfil, user=request.user)
             if perfil_form.is_valid():
