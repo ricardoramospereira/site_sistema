@@ -10,6 +10,7 @@ urlpatterns = [
     path('update-user/<slug:username>/', views.update_user, name='update-user'),
     path('user-list/', views.user_list, name='user_list'),
     path('add-user/', views.add_user, name='add-user'),
+    path('new-password/', views.force_password_change_view, name='force_password_change'),
     path("", include("django.contrib.auth.urls")), # Django auth
     
 ]
