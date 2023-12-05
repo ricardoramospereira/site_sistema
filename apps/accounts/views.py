@@ -170,6 +170,17 @@ def add_user(request):
             
             messages.success(request, 'Usuário adicionado com sucesso.')
             return redirect('user_list')
+        else:
+            # Verifica os erros para cada campo do formulário
+            for field, error_list in user_form.errors.items():
+                for error in error_list:
+                    messages.error(request, f"Erro no campo '{user_form[field].label}': {error}")
+            
+            for field, error_list in perfil_form.errors.items():
+                for error in error_list:
+                    messages.error(request, f"Erro no campo '{user_form[field].label}': {error}")
+
+
         
     context = {'user_form': user_form, 'perfil_form': perfil_form}
     return render(request, "accounts/add-user.html", context)
