@@ -4,8 +4,8 @@ from user_profile.models import UserProfile
 
 class ProfileForm(forms.ModelForm):
     descricao = forms.CharField(
-    widget=forms.Textarea(attrs={'rows': 3}),
-    max_length=200
+        widget=forms.Textarea(attrs={'rows': 3}),
+        max_length=200
     )
     
     class Meta:

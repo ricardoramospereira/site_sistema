@@ -21,7 +21,12 @@ class UserProfile(models.Model):
         verbose_name_plural = "Perfil"
 
 # Cria um perfil automaticamente
-@receiver(post_save, sender=settings.AUTH_USER_MODEL)
+'''@receiver(post_save, sender=settings.AUTH_USER_MODEL)
 def create_perfil(sender, **kwargs):
     if kwargs.get('created', False):
-        UserProfile.objects.create(usuario=kwargs['instance'])
+        UserProfile.objects.create(usuario=kwargs['instance'])'''
+
+@receiver(post_save, sender=settings.AUTH_USER_MODEL)
+def create_perfil(sender, instance, created, **kwargs):
+    if created:
+        UserProfile.objects.get_or_create(usuario=instance)

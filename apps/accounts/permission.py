@@ -13,3 +13,16 @@ def grupo_colaborador_required(groups):
                 # return HttpResponseForbidden('Você não tem permissão para acessar esta página.')
         return wrapper
     return decorator
+
+'''def grupo_colaborador_required(groups):
+    def decorator(view_func):
+        def wrapper(request, *args, **kwargs):
+            group_exists = request.user.groups.filter(name__in=groups).exists()
+            print(f"Group Exists: {group_exists}")  # depuração
+            if group_exists:
+                return view_func(request, *args, **kwargs)
+            else:
+                messages.error(request, 'Você não tem permissão para acessar esta página.')
+                return redirect('home')
+        return wrapper
+    return decorator'''
