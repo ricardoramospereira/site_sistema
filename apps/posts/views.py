@@ -14,6 +14,24 @@ def post_list(request):
     }
     return render(request, 'posts/list-post-forum.html', context=context)
 
+def dash_list_post(request):
+    if request.path == '/posts/': # Pagina forum da home, mostrar tudo ativo.
+        postagens = models.PostagemForum.objects.filter(ativo=True)
+        template_view = 'posts/list-post.html' # lista de post da rota /forum/
+    else: # Mostra no Dashboard
+        user = request.user
+        grupos = ['administrador', 'colaborador']
+        template_view = 'posts/dash-list-post.html' 
+
+        if any(grupo.name in grupos for grupo in user.groups.all()) or user.is_superuser:
+            # Usuário é administrador ou colaborador, pode ver todas as postagens
+            postagens = models.PostagemForum.objects.filter(ativo=True)
+        else:
+            # Usuário é do grupo usuário, pode ver apenas suas próprias postagens
+            postagens = models.PostagemForum.objects.filter(usuario=user)
+    context = {'postagens': postagens}
+    return render(request, template_view, context)
+
 
 
 def create_post(request):
@@ -42,8 +60,9 @@ def edit_post(request, id):
     postagem = get_object_or_404(models.PostagemForum, id=id)
 
     # Verifica se o usuário autenticado é o autor da postagem
+    grupos = ['administrador', 'colaborador']
     if request.user != postagem.usuario and not (
-            ['administrador', 'colaborador'] in request.user.groups.all()
+            any(grupo.name in grupos for grupo in request.user.groups.all())
             or request.user.is_superuser):
             messages.warning(request, 'Seu usuário não tem permissões para acessar essa página')
             return redirect('post_list') # Redireciona para uma página de erro ou outra página adequada

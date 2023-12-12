@@ -86,9 +86,8 @@
         <button type="button" class="btn btn-light" aria-current="true" onclick="location.href='{% url 'dashboard' %}'">
         <i class="fas fa-tachometer-alt me-2"></i>Painel</button>
 
-        <button type="button" class="btn btn-light">
-          <i class="fas fa-file-alt me-2"></i>Relatórios
-        </button>
+        <button type="button" class="btn btn-light" onclick="location.href='{% url 'report' %}'">
+        <i class="fas fa-file-alt me-2"></i>Relatórios</button>
 
         {% if perms.accounts.view_myuser %}
             <button type="button" class="btn btn-light" onclick="location.href='{% url 'user_list' %}'">
@@ -102,8 +101,11 @@
     <!-- Container -->
     <div class="bloco">
       {% include 'base/components/messages.html' %} 
-      {% block content_dash %} 
-      {% endblock %}
+      <div class="p-3">
+        {% block content_dash %} 
+        {% endblock %}
+      </div>
+      
     </div>
 
     <footer class="nav-bottom py-2 bg-light mt-auto fixed-bottom">

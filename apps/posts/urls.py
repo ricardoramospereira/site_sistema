@@ -7,7 +7,6 @@ urlpatterns = [
     path('detail-post/<int:id>/', views.detail_post, name='detail-post'),
     path('edit_post/<int:id>/', views.edit_post, name='edit_post'),
     path('delete_post/<int:id>/', views.delete_post, name='delete_post'),
-
-
+    path('dashboard/list-post/', views.dash_list_post, name='dash-list-post'),
 
 ]

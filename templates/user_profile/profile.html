@@ -1,4 +1,4 @@
-{% extends "base/base.html" %}
+{% extends "base/base.html" %} 
 {% load static %} 
 
 {% block content %}
@@ -6,11 +6,21 @@
   <div class="d-flex flex-wrap gap-5 justify-content-center align-items-center">
     <div class="d-flex flex-column">
       {% if obj.perfil.foto %}
-        <img src="{{obj.perfil.foto.url}}" class='img-thumbnail border rounded' width='280' alt=''> 
-      {% else %}  
-        <img src="{% static 'images/teste.png/'%}" class='img-thumbnail border rounded' width='280' alt=''> 
+      <img
+        src="{{obj.perfil.foto.url}}"
+        class="img-thumbnail border rounded"
+        width="280"
+        alt=""
+      />
+      {% else %}
+      <img
+        src="{% static 'images/teste.png/'%}"
+        class="img-thumbnail border rounded"
+        width="280"
+        alt=""
+      />
 
-      {% endif %}  
+      {% endif %}
 
       <button class="btn btn-warning" onclick="location.href='#'">
         <i class="fas fa-cog"></i> Editar Perfil
@@ -29,5 +39,56 @@
       </div>
     </div>
   </div>
+</div>
+<hr />
+
+<div class="row g-2 mt-5">
+  <div class="col-md-4 bg-light">
+    <form class="d-flex" role="search" method="GET">
+      <input
+        class="form-control me-2"
+        type="search"
+        name="title_post"
+        placeholder="Pesquisar..."
+        aria-label="Search"
+      />
+      <button class="btn btn-outline-dark" type="submit">Pesquisar</button>
+    </form>
+  </div>
+  <div class="col-md-8">
+
+    <!-- Coloca a lista de produtos aqui -->
+{% for post in obj.user_postagem_forum.all %}
+<div class="p-3 mb-3 rounded-3 shadow-sm">
+<div class="align-items-center">
+<div class="d-flex justify-content-between">
+<h5><a href="{% url 'detail-post' post.id %}">
+{{post.titulo}}</a></h5>
+<div class="div">
+{% if post.usuario == request.user %}
+<a class="btn btn-warning"
+href="{% url 'edit_post' post.id %}">
+<i class="fas fa-edit"></i></a>
+<a class="btn btn-danger" data-bs-toggle="modal"
+href="#confirmarExclusaoModal{{post.id}}" role="button">
+<i class="fas fa-trash"></i></a>
+{% endif %}
+</div>
+</div>
+<div class="text-truncate-box">
+<p class="text-truncate">{{post.descricao|truncatechars:230}}</p>
+</div>
+</div>
+<div class="d-flex justify-content-between align-items-center">
+<div class="align-items-center">
+<small class="text-muted">{{post.data_publicacao}}</small>
+</div>
+</div>
+</div>
+{% include "posts/delete-post.html"%}
+{% endfor %}
+  </div>
+</div>
+
 </div>
 {% endblock %}
