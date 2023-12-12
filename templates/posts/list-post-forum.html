@@ -1,0 +1,29 @@
+{% extends "base/base.html" %}
+{% block title %}Todos as Postagens do Forum{% endblock %}
+{% block content %}
+<div class="container mt-3">
+    <div class="row">
+        <div class="col-md-8">
+            {% include 'base/components/messages.html' %}
+            {% for post in posts %}
+            <div class="p-3 mb-3 rounded-3 shadow-sm">
+                <div class="align-items-center">
+                    <div class="d-flex justify-content-between">
+                        <h5><a href="#">{{post.titulo}}</a></h5>
+                        <small>{{post.usuario.first_name}} {{post.usuario.last_name}}</small>
+                    </div>
+                    <div class="text-truncate-box">
+                        <p class="text-truncate">{{post.descricao|safe|truncatechars:230}}</p>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="align-items-center">
+                        <small class="text-muted">{{post.data_publicacao}}</small>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

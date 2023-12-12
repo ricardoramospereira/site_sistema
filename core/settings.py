@@ -72,11 +72,13 @@ INSTALLED_APPS = [
 
     # Third_apps
     "corsheaders",
+    
 
     # My app
     'apps.pages',
     'apps.user_profile',
     'apps.config',
+    'apps.posts',
 ]
 
 # Apps de terceiro
