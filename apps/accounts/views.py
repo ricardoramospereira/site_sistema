@@ -7,6 +7,7 @@ from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from accounts.models import MyUser
 from accounts.permission import grupo_colaborador_required
+from config.utils import add_form_errors_to_messages
 from core import settings
 from user_profile.models import UserProfile 
 from user_profile.forms import ProfileForm
@@ -42,7 +43,8 @@ def login_view(request):
                 return redirect('home')
 
         else:
-            messages.error(request, 'Se o erro persistir entre em contato com o Adminstrador do sistema')
+            messages.error(request, 'Combinação de e-mail e senha inválida. \
+                           Se o erro persistir entre em contato com o Adminstrador do sistema')
 
     if request.user.is_authenticated:
         return redirect('home')
@@ -100,9 +102,8 @@ def register_view(request):
             # messages.success(request, 'Registrado. Agora faça o login para começar!')
             # return redirect('login')
         else:
-            # Tratar quando usuario já existe, senhas... etc...
-            messages.error(request, 'A senha deve ter pelo menos 1 caractere maiúsculo, \
-    1 caractere especial e no minimo 8 caracteres.')
+            add_form_errors_to_messages(request, form)
+
     form = CustomUserCreationForm(user=request.user)
     return render(request, "accounts/register.html",{"form": form})
 
@@ -117,7 +118,9 @@ def update_my_user(request):
         if form.is_valid():
             form.save()
             messages.success(request, 'Seu perfil foi atualizado com sucesso!')
-        return redirect('home')
+            return redirect('home')
+        else:
+            add_form_errors_to_messages(request, form)
     else:
         form = UserChangeForm(instance=request.user, user=request.user)
     return render(request, 'accounts/user_update.html', {'form': form})
@@ -147,7 +150,11 @@ def update_user(request, username):
             
             usuario.save()
             messages.success(request, ' O perfil de usuário foi atulizado com sucesso!')
-            return redirect('home')
+            return redirect('user_list')
+        
+        else:
+            add_form_errors_to_messages(request, form)
+            
     else:
         form = UserChangeForm(instance=user, user=request.user)
     return render(request, 'accounts/user_update.html', {'form': form})
@@ -200,6 +207,11 @@ def add_user(request):
             usuario.groups.add(group)
 
             # Crie um novo perfil para o usuário
+            '''
+            perfil = perfil_form.save(commit=False)
+            perfil.usuario = user
+            perfil.save()
+            '''
             perfil, created = UserProfile.objects.get_or_create(usuario=usuario)
             perfil_form = ProfileForm(request.POST, request.FILES, instance=perfil, user=request.user)
             if perfil_form.is_valid():
@@ -209,13 +221,16 @@ def add_user(request):
             return redirect('user_list')
         else:
             # Verifica os erros para cada campo do formulário
-            for field, error_list in user_form.errors.items():
+            # Adicionar mensagens de erro aos campos dos formulários
+            add_form_errors_to_messages(request, user_form)
+            add_form_errors_to_messages(request, perfil_form)
+            '''for field, error_list in user_form.errors.items():
                 for error in error_list:
                     messages.error(request, f"Erro no campo '{user_form[field].label}': {error}")
             
             for field, error_list in perfil_form.errors.items():
                 for error in error_list:
-                    messages.error(request, f"Erro no campo '{user_form[field].label}': {error}")
+                    messages.error(request, f"Erro no campo '{user_form[field].label}': {error}")'''
 
 
         
