@@ -41,6 +41,9 @@
       </form>
 
       {% if user.is_authenticated %}
+        <button class="btn btn-success mx-2" onclick="location.href='{% url 'create_post' %}'">
+<i class="fas fa-plus"></i> Criar Postagem</button>
+
         <button class="btn btn-warning mx-2" type="submit" onclick="location.href='{% url 'dashboard' %}'">
         <i class="fas fa-cog"></i></button>
         <span class="p-2">
