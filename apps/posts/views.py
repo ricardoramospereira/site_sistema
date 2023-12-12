@@ -4,6 +4,7 @@ from django.shortcuts import get_object_or_404, render, redirect
 
 from posts.forms import PostagemForumForm
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 def post_list(request):
@@ -34,3 +35,28 @@ def create_post(request):
 def detail_post(request, id):
     post = get_object_or_404(models.PostagemForum, id=id)
     return render(request, 'posts/detail-post.html', {'post': post})
+
+
+@login_required
+def edit_post(request, id):
+    postagem = get_object_or_404(models.PostagemForum, id=id)
+
+    # Verifica se o usuário autenticado é o autor da postagem
+    if request.user != postagem.usuario and not (
+            ['administrador', 'colaborador'] in request.user.groups.all()
+            or request.user.is_superuser):
+            messages.warning(request, 'Seu usuário não tem permissões para acessar essa página')
+            return redirect('post_list') # Redireciona para uma página de erro ou outra página adequada
+    
+    if request.method == 'POST':
+        form = PostagemForumForm(request.POST, instance=postagem)
+        if form.is_valid():
+            form.save()
+            messages.warning(request, 'Seu Post '+ postagem.titulo +' \
+                foi atualizado com sucesso!')
+            return redirect('edit_post', id=postagem.id)
+        else:
+            add_form_errors_to_messages(request, form)
+    else:
+        form = PostagemForumForm(instance=postagem)
+    return render(request, 'posts/form-post.html', {'form': form})

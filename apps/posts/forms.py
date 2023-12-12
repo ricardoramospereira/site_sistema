@@ -1,5 +1,6 @@
 from django import forms
 from django.conf import settings
+from django.shortcuts import get_object_or_404
 from .models import PostagemForum
 
 class PostagemForumForm(forms.ModelForm):
@@ -17,3 +18,4 @@ class PostagemForumForm(forms.ModelForm):
                 field.widget.attrs['class'] = 'form-check-input'
             else:
                 field.widget.attrs['class'] = 'form-control'
+
