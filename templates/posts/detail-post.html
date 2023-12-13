@@ -11,9 +11,10 @@
 
           <div class="div">
             {% if post.usuario == request.user %}
-            <a class="btn btn-warning" href="{% url 'edit_post' post.id %}"><i class="fas fa-edit"></i></a>
-            <a class="btn btn-danger" data-bs-toggle="modal" href="#confirmarExclusaoModal{{post.id}}" role="button">
-<i class="fas fa-trash"></i></a>
+              <a class="btn btn-warning" data-bs-toggle="modal" href="#editarPostagemModal{{post.id}}" role="button"> # Adiciona
+              <i class="fas fa-edit"></i></a>
+              <a class="btn btn-danger" data-bs-toggle="modal" href="#confirmarExclusaoModal{{post.id}}" role="button">
+              <i class="fas fa-trash"></i></a>
             {% endif %}
           </div>
 
@@ -30,5 +31,6 @@
     </div>
   </div>
 </div>
+{% include "posts/modal-form-posts.html"%}
 {% include "posts/delete-post.html"%}
 {% endblock %}

@@ -6,6 +6,8 @@ from posts.forms import PostagemForumForm
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 
+from django.http import JsonResponse
+
 # Create your views here.
 def post_list(request):
     posts = models.PostagemForum.objects.filter(ativo=True)
@@ -52,7 +54,9 @@ def create_post(request):
 
 def detail_post(request, id):
     post = get_object_or_404(models.PostagemForum, id=id)
-    return render(request, 'posts/detail-post.html', {'post': post})
+    form = PostagemForumForm(instance=post)
+    context = {'form': form, 'post': post}
+    return render(request,'posts/detail-post.html', context)
 
 
 @login_required
@@ -76,9 +80,10 @@ def edit_post(request, id):
             return redirect('edit_post', id=postagem.id)
         else:
             add_form_errors_to_messages(request, form)
-    else:
+    '''else:
         form = PostagemForumForm(instance=postagem)
-    return render(request, 'posts/form-post.html', {'form': form})
+    return render(request, 'posts/form-post.html', {'form': form})'''
+    return JsonResponse({'status': 'Ok'}) # Coloca por enquanto.
 
 @login_required
 def delete_post(request, id):

@@ -60,18 +60,13 @@
     <!--lista de produtos aqui -->
 {% for post in obj.user_postagem_forum.all %}
 <div class="p-3 mb-3 rounded-3 shadow-sm">
-<div class="align-items-center">
-<div class="d-flex justify-content-between">
-<h5><a href="{% url 'detail-post' post.id %}">
-{{post.titulo}}</a></h5>
-<div class="div">
-{% if post.usuario == request.user %}
-<a class="btn btn-warning"
-href="{% url 'edit_post' post.id %}">
-<i class="fas fa-edit"></i></a>
-<a class="btn btn-danger" data-bs-toggle="modal"
-href="#confirmarExclusaoModal{{post.id}}" role="button">
-<i class="fas fa-trash"></i></a>
+  <div class="align-items-center">
+    <div class="d-flex justify-content-between">
+      <h5><a href="{% url 'detail-post' post.id %}">{{post.titulo}}</a></h5>
+      <div class="div">
+        {% if post.usuario == request.user %}
+        <a class="btn btn-warning" data-bs-toggle="modal" href="#editarPostagemModal{{post.id}}" role="button"> # Adiciona
+        <a class="btn btn-danger" data-bs-toggle="modal" href="#confirmarExclusaoModal{{post.id}}" role="button"><i class="fas fa-trash"></i></a>
 {% endif %}
 </div>
 </div>
@@ -85,6 +80,7 @@ href="#confirmarExclusaoModal{{post.id}}" role="button">
 </div>
 </div>
 </div>
+{% include "posts/modal-form-posts.html"%}
 {% include "posts/delete-post.html"%}
 {% endfor %}
   </div>
