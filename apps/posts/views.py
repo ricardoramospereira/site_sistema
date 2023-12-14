@@ -54,6 +54,11 @@ def create_post(request):
             forum = form.save(commit=False)
             forum.usuario = request.user
             form.save()
+
+            postagem_imagens = request.FILES.getlist('postagem_imagens')
+            for f in postagem_imagens:
+                models.PostagemForumImagem.objects.create(postagem=forum, imagem=f)
+                
             # Redirecionar para uma página de sucesso ou fazer qualquer outra ação desejada
             messages.success(request, 'Seu Post foi cadastrado com sucesso!')
             return redirect('post_list')
