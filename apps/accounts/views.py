@@ -166,7 +166,7 @@ def update_user(request, username):
 def user_list(request): # Lista Cliente
     lista_usuarios = MyUser.objects.select_related('perfil').filter(is_superuser=False)
     
-    paginacao = Paginator(lista_usuarios, 5)
+    paginacao = Paginator(lista_usuarios, 10)
     pagina_numero = request.GET.get("page")
     page_obj = paginacao.get_page(pagina_numero)
 

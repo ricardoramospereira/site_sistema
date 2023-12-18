@@ -30,13 +30,9 @@
           <a class="nav-link" href="{% url 'post_list' %}">Forum (QA)</a>
         </li>
       </ul>
+
       <form class="d-flex" role="search">
-        <input
-          class="form-control me-2"
-          type="search"
-          placeholder="Pesquisar"
-          aria-label="Search"
-        />
+        <input type="search" name="titulo" class="form-control me-2" placeholder="Buscar por título" aria-label="Search" value="{{ request.GET.titulo }}">
         <button class="btn btn-success" type="submit">Pesquisar</button>
       </form>
 

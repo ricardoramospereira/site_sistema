@@ -1,76 +1,76 @@
-from config.utils import add_form_errors_to_messages
+from config.utils import add_form_errors_to_messages, filter_model
 from posts import models
 from django.shortcuts import get_object_or_404, render, redirect
-
 from posts.forms import PostagemForumForm
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-
+from django.core.exceptions import PermissionDenied
 from django.http import JsonResponse
 import re
 
-from django.core.paginator import Paginator
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 
 # Create your views here.
 def post_list(request):
-    # Obter todas as postagens ativas
     posts = models.PostagemForum.objects.filter(ativo=True)
 
-    # Configurar a paginação
-    paginator = Paginator(posts, 10)  # 10 postagens por página, ajuste conforme necessário
+    paginator = Paginator(posts, 10)  # 10 postagens por página
 
-    # Obter o número da página da requisição
     page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
+    try:
+        page_obj = paginator.get_page(page_number)
+    except PageNotAnInteger:
+        page_obj = paginator.page(1)
+    except EmptyPage:
+        page_obj = paginator.page(paginator.num_pages)
 
-    # Preparar o contexto com o objeto de página
     context = {
         'page_obj': page_obj
     }
 
     return render(request, 'posts/list-post-forum.html', context=context)
+
+@login_required
 def dash_list_post(request):
     form_dict = {}
-    # Valida Rotas (Forum ou Dashboard)
-    if request.path == '/posts/': # Pagina forum da home, mostrar tudo ativo.
+    filtros = {}
+
+    valor_busca = request.GET.get("titulo")
+    if valor_busca:
+        filtros["titulo__icontains"] = valor_busca  # Busca insensível a maiúsculas e minúsculas
+
+    if request.path == '/posts/':
         postagens = models.PostagemForum.objects.filter(ativo=True)
-        template_view = 'posts/list-post.html' # lista de post da rota /forum/
-    else: # Mostra no Dashboard
+        template_view = 'posts/list-post.html'
+    else:
         user = request.user
         grupos = ['administrador', 'colaborador']
-        template_view = 'posts/dash-list-post.html' 
+        template_view = 'posts/dash-list-post.html'
 
         if any(grupo.name in grupos for grupo in user.groups.all()) or user.is_superuser:
-            # Usuário é administrador ou colaborador, pode ver todas as postagens
             postagens = models.PostagemForum.objects.filter(ativo=True)
         else:
-            # Usuário é do grupo usuário, pode ver apenas suas próprias postagens
             postagens = models.PostagemForum.objects.filter(usuario=user)
 
-    # Como existe uma lista de objetos, para aparecer o formulário
-    # correspondente no modal precisamos ter um for
+    postagens = postagens.filter(**filtros)
+
     for el in postagens:
-        form = PostagemForumForm(instance=el)
-        form_dict[el] = form
+        form_dict[el] = PostagemForumForm(instance=el)
 
+    paginacao = Paginator(list(form_dict.items()), 10)  # Paginação
 
-
-    # Criar uma lista de tuplas (postagem, form) a partir do form_dict
-    form_list = [(postagem, form) for postagem, form in form_dict.items()]
-
-    # Aplicar a paginação à lista de tuplas
-    paginacao = Paginator(form_list, 3) #TODO: '3' é numero de registro por pagina
-
-    # Obter o número da página a partir dos parâmetros da URL
     pagina_numero = request.GET.get("page")
-    page_obj = paginacao.get_page(pagina_numero)
+    try:
+        page_obj = paginacao.get_page(pagina_numero)
+    except PageNotAnInteger:
+        page_obj = paginacao.page(1)
+    except EmptyPage:
+        page_obj = paginacao.page(paginacao.num_pages)
 
-    # Criar um novo dicionário form_dict com base na página atual
-    form_dict = {postagem: form for postagem, form in page_obj}
     context = {
-        'page_obj': page_obj, 
-        'form_dict': form_dict
-        }
+        'page_obj': page_obj,
+        'form_dict': dict(page_obj)  # Converte o objeto da página de volta para um dicionário
+    }
 
     return render(request, template_view, context)
 
@@ -81,18 +81,22 @@ def create_post(request):
         form = PostagemForumForm(request.POST, request.FILES)
         if form.is_valid():
             postagem_imagens = request.FILES.getlist('postagem_imagens')
-            if len(postagem_imagens) > 5: # Count
+            if len(postagem_imagens) > 5:  # Count
                 messages.error(request, 'Você só pode adicionar no máximo 5 imagens.')
             else:
-                forum = form.save(commit=False)
-                forum.usuario = request.user
-                form.save()
-                for f in postagem_imagens:
-                    models.PostagemForumImagem.objects.create(postagem=forum, imagem=f)
-                    
-                # Redirecionar para uma página de sucesso ou fazer qualquer outra ação desejada
-                messages.success(request, 'Seu Post foi cadastrado com sucesso!')
-                return redirect('post_list')
+                try:
+                    forum = form.save(commit=False)
+                    forum.usuario = request.user
+                    form.save()
+
+                    for f in postagem_imagens:
+                        models.PostagemForumImagem.objects.create(postagem=forum, imagem=f)
+                        
+                    messages.success(request, 'Seu Post foi cadastrado com sucesso!')
+                    return redirect('post_list')
+                except Exception as e:
+                    messages.error(request, f'Erro ao salvar postagem: {e}')
+        
         else:
             add_form_errors_to_messages(request, form)
     
@@ -107,44 +111,40 @@ def detail_post(request, id):
 
 @login_required
 def edit_post(request, id):
-    redirect_route = request.POST.get('redirect_route', '')
-
     post = get_object_or_404(models.PostagemForum, id=id)
-    message = 'Seu Post ' + post.titulo + ' foi atualizado com sucesso!'
 
-    # Verifica se o usuário autenticado é o autor da postagem
-    grupos = ['administrador', 'colaborador']
-    if request.user != post.usuario and not (
-            any(grupo.name in grupos for grupo in request.user.groups.all())
-            or request.user.is_superuser):
-        messages.warning(request, 'Seu usuário não tem permissões para acessar essa página')
-        return redirect('post_list')  # Redireciona para uma página de erro ou outra página adequada
+    # Verifica se o usuário autenticado é o autor da postagem ou tem permissões necessárias
+    if not (post.usuario == request.user or request.user.is_superuser or
+            any(grupo.name in ['administrador', 'colaborador'] for grupo in request.user.groups.all())):
+        raise PermissionDenied
 
     if request.method == 'POST':
         form = PostagemForumForm(request.POST, request.FILES, instance=post)
         if form.is_valid():
-            form.save()
-            post_atualizado = form.instance  # Obtém a instância atualizada de PostagemForum
+            try:
+                post_atualizado = form.save(commit=False)
 
-            contar_imagens = post_atualizado.postagem_imagens.count()  # Quantidade de imagens que já tenho no post
-            postagem_imagens = request.FILES.getlist('postagem_imagens')  # Quantidade de imagens que estou enviando para salvar
+                contar_imagens = post_atualizado.postagemforumimagem_set.count()
+                postagem_imagens = request.FILES.getlist('postagem_imagens')
 
-            if contar_imagens + len(postagem_imagens) > 5:
-                messages.error(request, 'Você só pode adicionar no máximo 5 imagens')
-            else:
-                for f in postagem_imagens:  # for para pegar as imagens e salvar.
-                    models.PostagemForumImagem.objects.create(postagem=post_atualizado, imagem=f)
+                if contar_imagens + len(postagem_imagens) > 5:
+                    messages.error(request, 'Você só pode adicionar no máximo 5 imagens.')
+                else:
+                    post_atualizado.save()
+                    for imagem in postagem_imagens:
+                        models.PostagemForumImagem.objects.create(postagem=post_atualizado, imagem=imagem)
 
-                messages.success(request, message)  # Alterado para success
-                return redirect(redirect_route)
+                    messages.success(request, f'Seu Post {post_atualizado.titulo} foi atualizado com sucesso!')
+                    return redirect('post_list')
+            except Exception as e:
+                messages.error(request, f'Erro ao atualizar postagem: {e}')
         else:
             add_form_errors_to_messages(request, form)
     else:
         form = PostagemForumForm(instance=post)
         imagens = models.PostagemForumImagem.objects.filter(postagem=post)
-        return render(request, 'posts/form-post.html', {'form': form, 'imagens': imagens})
 
-    return JsonResponse({'status': 'Ok'})  # Coloca por enquanto.
+    return render(request, 'posts/form-post.html', {'form': form, 'imagens': imagens})
 
 @login_required
 def delete_post(request, id):
@@ -163,20 +163,16 @@ def delete_post(request, id):
     return render(request, 'posts/detail-post.html', {'postagem': postagem})
 
 def remove_image(request):
-    imagem_id = request.GET.get('imagem_id')  # Id da imagem
+    imagem_id = request.GET.get('imagem_id')
 
     try:
-        # Tenta obter a imagem; se não existir, uma exceção será lançada
         postagem_imagem = models.PostagemForumImagem.objects.get(id=imagem_id)
-
-        # Excluir a imagem do sistema de arquivos e do banco de dados
         postagem_imagem.imagem.delete()
         postagem_imagem.delete()
-
         message = 'Imagem removida com sucesso.'
-
+        status = 'success'
     except models.PostagemForumImagem.DoesNotExist:
         message = 'Imagem não encontrada.'
+        status = 'error'
 
-    # Retorna uma resposta JSON
-    return JsonResponse({'message': message})
+    return JsonResponse({'message': message, 'status': status})
