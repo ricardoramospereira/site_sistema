@@ -9,14 +9,26 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 import re
 
+from django.core.paginator import Paginator
+
 # Create your views here.
 def post_list(request):
+    # Obter todas as postagens ativas
     posts = models.PostagemForum.objects.filter(ativo=True)
-    context = {
-        'posts': posts
-    }
-    return render(request, 'posts/list-post-forum.html', context=context)
 
+    # Configurar a paginação
+    paginator = Paginator(posts, 10)  # 10 postagens por página, ajuste conforme necessário
+
+    # Obter o número da página da requisição
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    # Preparar o contexto com o objeto de página
+    context = {
+        'page_obj': page_obj
+    }
+
+    return render(request, 'posts/list-post-forum.html', context=context)
 def dash_list_post(request):
     form_dict = {}
     # Valida Rotas (Forum ou Dashboard)
@@ -40,10 +52,27 @@ def dash_list_post(request):
     for el in postagens:
         form = PostagemForumForm(instance=el)
         form_dict[el] = form
-    context = {'postagens': postagens,'form_dict': form_dict}
+
+
+
+    # Criar uma lista de tuplas (postagem, form) a partir do form_dict
+    form_list = [(postagem, form) for postagem, form in form_dict.items()]
+
+    # Aplicar a paginação à lista de tuplas
+    paginacao = Paginator(form_list, 3) #TODO: '3' é numero de registro por pagina
+
+    # Obter o número da página a partir dos parâmetros da URL
+    pagina_numero = request.GET.get("page")
+    page_obj = paginacao.get_page(pagina_numero)
+
+    # Criar um novo dicionário form_dict com base na página atual
+    form_dict = {postagem: form for postagem, form in page_obj}
+    context = {
+        'page_obj': page_obj, 
+        'form_dict': form_dict
+        }
 
     return render(request, template_view, context)
-        
 
 
 def create_post(request):

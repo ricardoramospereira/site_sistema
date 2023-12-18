@@ -15,6 +15,8 @@ from user_profile.forms import ProfileForm
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth import update_session_auth_hash
 
+from django.core.paginator import Paginator
+
 from django.core.mail import send_mail
 
 # Create your views here.
@@ -163,7 +165,16 @@ def update_user(request, username):
 @grupo_colaborador_required(['administrador','colaborador'])
 def user_list(request): # Lista Cliente
     lista_usuarios = MyUser.objects.select_related('perfil').filter(is_superuser=False)
-    return render(request, 'accounts/user_list.html', {'lista_usuarios': lista_usuarios})
+    
+    paginacao = Paginator(lista_usuarios, 5)
+    pagina_numero = request.GET.get("page")
+    page_obj = paginacao.get_page(pagina_numero)
+
+    context = {
+        'page_obj': page_obj,
+        }
+    return render(request, 'accounts/user_list.html', context)
+        
 
 '''@login_required
 @grupo_colaborador_required(['administrador','colaborador'])
