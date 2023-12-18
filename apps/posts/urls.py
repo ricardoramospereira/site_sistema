@@ -9,4 +9,8 @@ urlpatterns = [
     path('delete_post/<int:id>/', views.delete_post, name='delete_post'),
     path('dashboard/list-post/', views.dash_list_post, name='dash-list-post'),
 
+    # AJAX
+    path('remove_image/', views.remove_image, name='remove_image'),
+
+
 ]

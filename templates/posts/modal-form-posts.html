@@ -32,7 +32,56 @@
             Cancelar
           </button>
         </form>
+
+        <div class="d-flex g-3"> 
+
+          {% for img in post.postagem_imagens.all %}
+            <div class="position-relative p-2 div-imagem">
+            <a href="#" class="position-absolute badge bg-danger remover-imagem" data-imagem-id="{{img.id}}">
+            <i class="fas fa-times"></i>
+            </a>
+            <img src="{{ img.imagem.url }}" class="img-fluid rounded" alt="{{img.id}}" width="100">
+            </div>
+          {% endfor %}
+
+        </div>
+
+
+
       </div>
     </div>
   </div>
 </div>
+
+<script src="https://code.jquery.com/jquery-3.6.4.min.js" integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8=" crossorigin="anonymous"></script>
+
+<!-- Seu script JavaScript vem após a importação do jQuery -->
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Event listener para o clique
+    document.querySelectorAll('.remover-imagem').forEach(function(element) {
+      element.addEventListener('click', function(e) {
+        console.log("Clique detectado");
+        e.preventDefault();
+
+        var imageId = this.getAttribute('data-imagem-id'); // Pega o id da imagem
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', '{% url "remove_image" %}?imagem_id=' + imageId, true);
+        xhr.onload = function() {
+          if (xhr.status === 200) {
+            console.log("Resposta recebida:", xhr.responseText);
+            // Remove a div da imagem do DOM
+            e.target.closest('.div-imagem').remove();
+          } else {
+            console.log("Erro na requisição:", xhr.statusText);
+          }
+        };
+        xhr.onerror = function() {
+          console.log("Erro na requisição");
+        };
+        xhr.send();
+      });
+    });
+  });
+</script>
