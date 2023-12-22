@@ -69,7 +69,7 @@ def dash_list_post(request):
 
     context = {
         'page_obj': page_obj,
-        'form_dict': dict(page_obj)  # Converte o objeto da página de volta para um dicionário
+        'form_dict': dict(page_obj),  # Converte o objeto da página de volta para um dicionário
     }
 
     return render(request, template_view, context)
