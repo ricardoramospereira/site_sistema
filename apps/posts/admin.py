@@ -13,6 +13,8 @@ class PostagemForumAdmin(admin.ModelAdmin):
     readonly_fields = ('slug',)
 # Register your models here.
 admin.site.register(models.PostagemForum, PostagemForumAdmin)
+admin.site.register(models.PostagemForumComentario)
+
 # admin.site.register(models.PostagemForumImagem)
 
 

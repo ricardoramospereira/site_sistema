@@ -1,7 +1,7 @@
 from config.utils import add_form_errors_to_messages, filter_model #TODO:separar
 from posts import models
 from django.shortcuts import get_object_or_404, render, redirect
-from posts.forms import PostagemForumForm
+from posts.forms import PostagemForumComentarioForm, PostagemForumForm
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
@@ -105,7 +105,13 @@ def create_post(request):
 def detail_post(request, slug):
     post = get_object_or_404(models.PostagemForum, slug=slug)
     form = PostagemForumForm(instance=post)
-    context = {'form': form, 'post': post}
+    form_comentario = PostagemForumComentarioForm()
+    context = {
+        'form': form,
+        'post': post, 
+        'form_comentario': form_comentario
+        }
+    
     return render(request,'posts/detail-post.html', context)
 
 
@@ -177,3 +183,28 @@ def remove_image(request):
         status = 'error'
 
     return JsonResponse({'message': message, 'status': status})
+
+def adicionar_comentario(request, slug):
+    postagem = get_object_or_404(models.PostagemForum, slug=slug)
+    message = 'Comentário Adcionado com sucesso!'
+    if request.method == 'POST':
+        form = PostagemForumComentarioForm(request.POST)
+        if form.is_valid():
+            comentario = form.save(commit=False)
+            comentario.usuario = request.user
+            comentario.postagem = postagem
+            comentario.save()
+            messages.warning(request, message)
+            return redirect('detail-post', slug=postagem.slug)
+    return JsonResponse({'status': message})
+
+def editar_comentario(request, comentario_id):
+    comentario = get_object_or_404(models.PostagemForumComentario, id=comentario_id)
+    message = 'Comentário Editado com sucesso!'
+    if request.method == 'POST':
+        form = PostagemForumComentarioForm(request.POST, instance=comentario)
+        if form.is_valid():
+            form.save()
+            messages.info(request, message)
+            return redirect('detail-post', slug=comentario.postagem.slug)
+    return JsonResponse({'status': message}) # TODO: PAGINA DE ERRO

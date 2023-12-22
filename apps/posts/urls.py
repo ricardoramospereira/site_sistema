@@ -12,5 +12,9 @@ urlpatterns = [
     # AJAX
     path('remove_image/', views.remove_image, name='remove_image'),
 
+    # Comentários
+    path('adicionar-comentario/<str:slug>/', views.adicionar_comentario, name='adicionar-comentario'), #TODO: ALTERAR PARA INGLES
+    path('editar-comentario/<int:comentario_id>/', views.editar_comentario, name='editar-comentario'), #TODO: ALTERAR PARA INGLES
+
 
 ]
