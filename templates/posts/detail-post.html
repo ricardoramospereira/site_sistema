@@ -74,10 +74,18 @@
           const confirmacao = confirm("Tem certeza de que deseja remover o comentário?");
 
           if (confirmacao) {
-             // Se o usuário confirmar, envie o formulário
           formRemocao.submit();
           }
       });
+
+      // comentário filho
+      formRemocao.addEventListener("submit", function (event)
+        event.preventDefault():
+         const confirmacao = confirm("Tem certeza de que deseja remover o comentário?");
+         if (confirmacao) {
+          formRemocao.submit();
+          }
+      )
   });
 </script>
 {% endblock scripts %}
