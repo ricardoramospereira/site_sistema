@@ -10,7 +10,7 @@
             <div class="p-3 mb-3 rounded-3 shadow-sm">
                 <div class="align-items-center">
                     <div class="d-flex justify-content-between">
-                        <h5><a href="{% url 'detail-post' post.id %}">{{post.titulo}}</a></h5>
+                        <h5><a href="{% url 'detail-post' post.slug %}">{{post.titulo}}</a></h5>
                         <small>{{post.usuario.first_name}} {{post.usuario.last_name}}</small>
                     </div>
                     <div class="text-truncate-box">

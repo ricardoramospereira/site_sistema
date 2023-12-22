@@ -6,11 +6,24 @@ from django.core.paginator import Paginator
 
 from posts.forms import PostagemForumForm
 
+from config.utils import filter_model
+
 # Só é permitido ver o perfil para quem está logado
 @login_required()
 def perfil_view(request, username):
     filtro = MyUser.objects.select_related('perfil').prefetch_related('user_postagem_forum') # resgata todos os objetos relacionados com myuser em lote
     perfil = get_object_or_404(filtro, username=username)
+
+    ################ FILTRO #############
+    perfil_postagens = perfil.user_postagem_forum.all() # Todas as postagens relacionadas com perfil
+    filtros = {}
+
+    valor_busca = request.GET.get("titulo") # pego parametro
+    if valor_busca:
+        filtros["titulo"] = valor_busca # add no dicionario
+        filtros["descricao"] = valor_busca # add no dicionario
+
+        perfil_postagens = filter_model(perfil_postagens, **filtros) # faz o filtro
 
     form_dict = {}
     for el in perfil.user_postagem_forum.all():

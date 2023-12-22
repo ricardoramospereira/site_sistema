@@ -1,4 +1,4 @@
-from config.utils import add_form_errors_to_messages, filter_model
+from config.utils import add_form_errors_to_messages, filter_model #TODO:separar
 from posts import models
 from django.shortcuts import get_object_or_404, render, redirect
 from posts.forms import PostagemForumForm
@@ -102,16 +102,17 @@ def create_post(request):
     
     return render(request, 'posts/form-post.html', {'form': form})
 
-def detail_post(request, id):
-    post = get_object_or_404(models.PostagemForum, id=id)
+def detail_post(request, slug):
+    post = get_object_or_404(models.PostagemForum, slug=slug)
     form = PostagemForumForm(instance=post)
     context = {'form': form, 'post': post}
     return render(request,'posts/detail-post.html', context)
 
 
 @login_required
-def edit_post(request, id):
-    post = get_object_or_404(models.PostagemForum, id=id)
+def edit_post(request, slug):
+    post = get_object_or_404(models.PostagemForum, slug=slug)
+    imagens = post.postagem_imagens.all()  # Modificado aqui
 
     # Verifica se o usuário autenticado é o autor da postagem ou tem permissões necessárias
     if not (post.usuario == request.user or request.user.is_superuser or
@@ -124,7 +125,7 @@ def edit_post(request, id):
             try:
                 post_atualizado = form.save(commit=False)
 
-                contar_imagens = post_atualizado.postagemforumimagem_set.count()
+                contar_imagens = post_atualizado.postagem_imagens.count()
                 postagem_imagens = request.FILES.getlist('postagem_imagens')
 
                 if contar_imagens + len(postagem_imagens) > 5:
@@ -142,14 +143,14 @@ def edit_post(request, id):
             add_form_errors_to_messages(request, form)
     else:
         form = PostagemForumForm(instance=post)
-        imagens = models.PostagemForumImagem.objects.filter(postagem=post)
 
     return render(request, 'posts/form-post.html', {'form': form, 'imagens': imagens})
 
+
 @login_required
-def delete_post(request, id):
+def delete_post(request, slug):
     redirect_route = request.POST.get('redirect_route', '') # Adiciona
-    postagem = get_object_or_404(models.PostagemForum, id=id)
+    postagem = get_object_or_404(models.PostagemForum, slug=slug)
 
     message = 'Seu Post '+ postagem.titulo +' foi deletado com sucesso!' # 
     if request.method == 'POST':

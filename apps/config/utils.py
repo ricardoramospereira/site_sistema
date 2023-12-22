@@ -16,8 +16,8 @@ def add_form_errors_to_messages(request, form):
     return queryset'''
 
 # Busca por mais de um valor
-def filter_model(model, **filters):
-    queryset = model.objects.all()
+def filter_model(queryset, **filters):
+
 
     q_objects = Q() # inicializa um objeto Q vazio
 
