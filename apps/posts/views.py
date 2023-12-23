@@ -12,9 +12,16 @@ from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 
 # Create your views here.
 def post_list(request):
-    posts = models.PostagemForum.objects.filter(ativo=True)
+    # Comece com todas as postagens ativas
+    query = models.PostagemForum.objects.filter(ativo=True)
 
-    paginator = Paginator(posts, 10)  # 10 postagens por página
+    # Filtragem por título, se um título for fornecido
+    titulo = request.GET.get('titulo')
+    if titulo:
+        query = query.filter(titulo__icontains=titulo)
+
+    # Paginação
+    paginator = Paginator(query, 10)  # 10 postagens por página
 
     page_number = request.GET.get('page')
     try:

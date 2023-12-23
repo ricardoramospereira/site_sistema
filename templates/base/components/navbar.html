@@ -31,10 +31,11 @@
         </li>
       </ul>
 
-      <form class="d-flex" role="search">
-        <input type="search" name="titulo" class="form-control me-2" placeholder="Buscar por título" aria-label="Search" value="{{ request.GET.titulo }}">
-        <button class="btn btn-success" type="submit">Pesquisar</button>
+      <form class="d-flex" role="search" method="get" action="{% url 'post_list' %}">
+    <input type="search" name="titulo" class="form-control me-2" placeholder="Buscar por título" aria-label="Search" value="{{ request.GET.titulo }}">
+    <button class="btn btn-success" type="submit">Pesquisar</button>
       </form>
+
 
       {% if user.is_authenticated %}
         <button class="btn btn-success mx-2" onclick="location.href='{% url 'create_post' %}'">
