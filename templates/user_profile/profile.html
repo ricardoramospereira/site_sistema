@@ -23,9 +23,12 @@
 
       {% endif %}
 
-      <button class="btn btn-warning" onclick="location.href='#'">
-        <i class="fas fa-cog"></i> Editar Perfil
-      </button>
+      {% if request.user == obj.perfil.usuario or request.user.is_superuser %}
+      <a class="btn btn-warning" href="{% url 'editar_perfil' obj.username %}" role="button">
+      <i class="fas fa-cog"></i> Editar Perfil
+      </a>
+      {% endif %}
+
     </div>
     <div class="perfil-info mt-3">
       <h2>{{obj.first_name}} {{obj.last_name}}</h2>

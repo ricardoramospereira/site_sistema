@@ -12,9 +12,14 @@
     <div>
     <ul>
 
-      <li><a href="{% url 'password_change' %}" class="btn btn-primary">Alterar minha senha</a></li>
-      <br>
-      <li><a href="{% url 'update-my-user' %}" class="btn btn-primary">Atualizar Usuário</a></li>
+     <ul>
+      <li><a href="{% url 'update-user' request.user.username %}">Alterar Configurações da Conta</a></li>
+      <li><a href="{% url 'password_change' %}">Alterar minha senha</a></li>
+      <li><a href="{% url 'editar_perfil' request.user.username %}">Editar meu Perfil</a></li>
+      {% if perms.contas.view_myuser %}
+      <li><a href="{% url 'user_list' %}">Lista Todos usuários</a></li>
+      {% endif %}
+    </ul>
       
 
     </ul>
